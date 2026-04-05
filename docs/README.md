@@ -10,8 +10,8 @@ Ce dossier est organisé par domaine pour qu'une personne qui rejoint le projet 
 
 | Dossier | Contenu |
 |---|---|
-| `01-cadrage/` | Contexte, problématique, objectifs, personas |
-| `02-architecture/` | Diagrammes, MVC, flux de données |
-| `03-execution/` | Planning, suivi, livrables |
-| `04-ux/` | Maquettes, wireframes, user flows |
+| `01-cadrage/` | Contexte, problématique, objectifs |
+| `02-architecture/` | Diagrammes, pipeline, base de données |
+| `03-execution/` | Planning sprints, suivi, livrables |
+| `04-ux/` | Maquettes, wireframes, parcours utilisateur |
 | `05-sources/` | Références, liens, ressources |
