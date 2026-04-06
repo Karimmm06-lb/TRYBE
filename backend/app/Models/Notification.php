@@ -1,26 +1,26 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Notification;
+use Illuminate\Http\Request;
 
-class Notification extends Model
+class NotificationController extends Controller
 {
-    protected $fillable = [
-        'ao_id',
-        'user_id',
-        'type',
-        'statut',
-        'envoyee_le',
-    ];
-
-    public function appelOffre()
+    // GET /api/notifications
+    public function index()
     {
-        return $this->belongsTo(AppelOffre::class, 'ao_id');
+        $notifications = Notification::with('appelOffre')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json($notifications);
     }
 
-    public function user()
+    // GET /api/notifications/{id}
+    public function show(int $id)
     {
-        return $this->belongsTo(User::class);
+        $notification = Notification::with('appelOffre')
+            ->findOrFail($id);
+        return response()->json($notification);
     }
 }
