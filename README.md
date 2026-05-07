@@ -38,7 +38,7 @@ Le système permet d’uploader un document (PDF, DOCX, TXT), d’en extraire le
 ## 🧱 Stack technique
 
 ### Backend
-- Laravel (PHP)
+- Express (JS)
 
 ### Frontend
 - Vue.js 3
