@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int              @id @default(autoincrement())
+  email              String           @unique
+  password           String
+  role               String           @default("user")
+  notif_email_active Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+  notifications      Notification[]
+  profils            ProfilInteret[]
+  appelsOffres       AppelOffre[]
+}
+
+model AppelOffre {
+  id             Int                  @id @default(autoincrement())
+  user_id        Int
+  profil_id      Int?
+  titre          String
+  domaine        String?
+  fichierPath    String?
+  format         String?
+  statut         String               @default("en_attente")
+  score          Int?
+  resume         String?
+  justification  String?
+  budget_estime  Int?
+  dateLimite     DateTime?
+  source         String               @default("manuel")
+  dateAnalyse    DateTime?
+  createdAt      DateTime             @default(now())
+  user           User                 @relation(fields: [user_id], references: [id])
+  profil         ProfilInteret?       @relation(fields: [profil_id], references: [id])
+  competences    CompetenceExtraite[]
+  notifications  Notification[]
+}
+
+model CompetenceExtraite {
+  id          Int        @id @default(autoincrement())
+  ao_id       Int
+  competence  String
+  appelOffre  AppelOffre @relation(fields: [ao_id], references: [id])
+}
+
+model ProfilInteret {
+  id                Int          @id @default(autoincrement())
+  user_id           Int
+  nomProfil         String
+  domaines          String?
+  competences       String?
+  budgetMin         Int?
+  seuilAlerte       Int          @default(50)
+  seuilTresRelevant Int          @default(75)
+  user              User         @relation(fields: [user_id], references: [id])
+  appelsOffres      AppelOffre[]
+}
+
+model Notification {
+  id         Int        @id @default(autoincrement())
+  ao_id      Int
+  user_id    Int
+  type       String
+  statut     String     @default("envoye")
+  envoyeeLe  DateTime   @default(now())
+  appelOffre AppelOffre @relation(fields: [ao_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
+}
+
+model SurveillanceSource {
+  id                   Int       @id @default(autoincrement())
+  nomPlateforme        String
+  url                  String
+  active               Boolean   @default(false)
+  frequenceMinutes     Int       @default(60)
+  derniereSurveillance DateTime?
+  nbAoRecuperes        Int       @default(0)
+  logErreur            String?
+}
