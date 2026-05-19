@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js'
 import appelOffresRoutes from './routes/appelOffres.js'
 import profilsRoutes from './routes/profils.js'
 import notificationsRoutes from './routes/notifications.js'
+import statsRoutes from './routes/stats.js'
 
 const app = express()
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/appels-offres', appelOffresRoutes)
 app.use('/api/profils', profilsRoutes)
 app.use('/api/notifications', notificationsRoutes)
+app.use('/api/stats', statsRoutes)
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
