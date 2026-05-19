@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useAppelOffresStore } from '@/stores/appelOffres'
 import Sidebar from '@/components/Sidebar.vue'
 import ScoreGauge from '@/components/ScoreGauge.vue'
-import { ArrowLeft, Calendar, Tag, Building, Cpu, FileText, Trash2, CheckCircle, Clock } from 'lucide-vue-next'
+import { ArrowLeft, Calendar, Tag, Building, Cpu, FileText, Trash2, CheckCircle, Clock, Download, Archive, CircleCheck, RefreshCw } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,6 +13,7 @@ const auth = useAuthStore()
 const store = useAppelOffresStore()
 
 const loading = ref(true)
+const actionLoading = ref(false)
 const ao = computed(() => store.current)
 
 onMounted(async () => {
@@ -35,7 +36,8 @@ function scoreColor(score: number) {
 function statusLabel(s: string) {
   const map: Record<string, string> = {
     analyse: 'Analysé', pertinent: 'Pertinent',
-    non_pertinent: 'Non pertinent', en_attente: 'En attente'
+    non_pertinent: 'Non pertinent', en_attente: 'En attente',
+    archive: 'Archivé', traite: 'Traité'
   }
   return map[s] ?? s
 }
@@ -43,9 +45,30 @@ function statusLabel(s: string) {
 function statusBadge(s: string) {
   const map: Record<string, string> = {
     analyse: 'badge-analyse', pertinent: 'badge-pertinent',
-    non_pertinent: 'badge-non-pertinent', en_attente: 'badge-attente'
+    non_pertinent: 'badge-non-pertinent', en_attente: 'badge-attente',
+    archive: 'badge-attente', traite: 'badge-pertinent'
   }
   return map[s] ?? 'badge-attente'
+}
+
+async function setStatut(statut: string) {
+  if (!ao.value) return
+  actionLoading.value = true
+  try {
+    await store.updateStatut(ao.value.id, statut)
+  } finally {
+    actionLoading.value = false
+  }
+}
+
+async function downloadPdf() {
+  if (!ao.value) return
+  actionLoading.value = true
+  try {
+    await store.exportPdf(ao.value.id, ao.value.titre)
+  } finally {
+    actionLoading.value = false
+  }
 }
 
 async function deleteAO() {
@@ -85,6 +108,16 @@ const infoItems = computed(() => {
             {{ ao?.titre ?? 'Chargement...' }}
           </h1>
         </div>
+        <!-- Export PDF -->
+        <button @click="downloadPdf" :disabled="actionLoading"
+                class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                style="background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.15); color: #00d4ff;"
+                onmouseover="this.style.background='rgba(0,212,255,0.15)'" onmouseout="this.style.background='rgba(0,212,255,0.07)'">
+          <Download :size="15" />
+          Exporter PDF
+        </button>
+
+        <!-- Supprimer -->
         <button @click="deleteAO" class="p-2.5 rounded-xl transition-all"
                 style="background: rgba(244,63,94,0.05); border: 1px solid rgba(244,63,94,0.1);"
                 onmouseover="this.style.background='rgba(244,63,94,0.15)'" onmouseout="this.style.background='rgba(244,63,94,0.05)'">
@@ -189,6 +222,43 @@ const infoItems = computed(() => {
                                  :size="16" :style="`color: ${threshold.color};`" />
                     <div v-else class="w-4 h-4 rounded-full border" style="border-color: rgba(255,255,255,0.1);"></div>
                   </div>
+                </div>
+              </div>
+
+              <!-- Actions statut -->
+              <div class="glass-card-static p-5">
+                <h3 class="text-sm font-semibold mb-4 uppercase tracking-widest" style="color: #475569;">Actions</h3>
+                <div class="flex flex-wrap gap-3">
+                  <button
+                    v-if="ao.statut !== 'traite'"
+                    @click="setStatut('traite')"
+                    :disabled="actionLoading"
+                    class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                    style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #10b981;"
+                    onmouseover="this.style.background='rgba(16,185,129,0.18)'" onmouseout="this.style.background='rgba(16,185,129,0.08)'">
+                    <CircleCheck :size="15" />
+                    Marquer comme traité
+                  </button>
+                  <button
+                    v-if="ao.statut !== 'archive'"
+                    @click="setStatut('archive')"
+                    :disabled="actionLoading"
+                    class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                    style="background: rgba(100,116,139,0.08); border: 1px solid rgba(100,116,139,0.2); color: #64748b;"
+                    onmouseover="this.style.background='rgba(100,116,139,0.18)'" onmouseout="this.style.background='rgba(100,116,139,0.08)'">
+                    <Archive :size="15" />
+                    Archiver
+                  </button>
+                  <button
+                    v-if="['archive','traite'].includes(ao.statut)"
+                    @click="setStatut('pertinent')"
+                    :disabled="actionLoading"
+                    class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                    style="background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.15); color: #00d4ff;"
+                    onmouseover="this.style.background='rgba(0,212,255,0.15)'" onmouseout="this.style.background='rgba(0,212,255,0.07)'">
+                    <RefreshCw :size="15" />
+                    Remettre en actif
+                  </button>
                 </div>
               </div>
 

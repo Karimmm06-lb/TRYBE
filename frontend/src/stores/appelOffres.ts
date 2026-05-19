@@ -79,6 +79,24 @@ export const useAppelOffresStore = defineStore('appelOffres', () => {
     list.value = list.value.filter(a => a.id !== id)
   }
 
+  async function updateStatut(id: number, statut: string) {
+    const res = await axios.patch(`/api/appels-offres/${id}/statut`, { statut })
+    if (current.value?.id === id) current.value = res.data
+    const idx = list.value.findIndex(a => a.id === id)
+    if (idx !== -1) list.value[idx] = res.data
+    return res.data
+  }
+
+  async function exportPdf(id: number, titre: string) {
+    const res = await axios.get(`/api/appels-offres/${id}/export`, { responseType: 'blob' })
+    const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `trybe-ao-${id}-${titre.slice(0, 30).replace(/[^a-z0-9]/gi, '-')}.pdf`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   async function fetchProfils() {
     const res = await axios.get('/api/profils')
     profils.value = res.data
@@ -112,7 +130,7 @@ export const useAppelOffresStore = defineStore('appelOffres', () => {
 
   return {
     list, current, profils, loading, analyzing,
-    fetchAll, fetchOne, upload, remove,
+    fetchAll, fetchOne, upload, remove, updateStatut, exportPdf,
     fetchProfils, createProfil, updateProfil, deleteProfil,
     getDashboardStats
   }
