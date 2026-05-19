@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import Sidebar from '@/components/Sidebar.vue'
-import { Bell, CheckCheck, Mail, TrendingUp, Clock, ArrowRight, Filter } from 'lucide-vue-next'
+import { Bell, CheckCheck, Mail, TrendingUp, Clock, ArrowRight, Filter, Send, Trash2 } from 'lucide-vue-next'
 import axios from 'axios'
 
 const router = useRouter()
@@ -42,6 +42,24 @@ async function markAllRead() {
   await Promise.all(
     notifications.value.filter(n => n.statut === 'envoye').map(n => markRead(n.id))
   )
+}
+
+const sendingId = ref<number | null>(null)
+
+async function resend(id: number) {
+  sendingId.value = id
+  try {
+    await axios.post(`/api/notifications/${id}/renvoyer`)
+    const n = notifications.value.find(n => n.id === id)
+    if (n) { n.statut = 'envoye' }
+  } finally {
+    sendingId.value = null
+  }
+}
+
+async function deleteNotif(id: number) {
+  await axios.delete(`/api/notifications/${id}`)
+  notifications.value = notifications.value.filter(n => n.id !== id)
 }
 
 const filtered = computed(() => {
@@ -171,18 +189,31 @@ function formatDate(d: string) {
                 <Clock :size="11" />
                 {{ formatDate(notif.envoyeeLe) }}
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 flex-wrap justify-end">
                 <button v-if="notif.statut === 'envoye'" @click="markRead(notif.id)"
                         class="text-xs px-2.5 py-1 rounded-lg transition-colors"
                         style="background: rgba(0,212,255,0.08); color: #00d4ff;"
                         onmouseover="this.style.background='rgba(0,212,255,0.15)'" onmouseout="this.style.background='rgba(0,212,255,0.08)'">
                   Marquer lu
                 </button>
+                <button @click="resend(notif.id)" :disabled="sendingId === notif.id"
+                        class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg transition-colors"
+                        style="background: rgba(139,92,246,0.08); color: #8b5cf6;"
+                        onmouseover="this.style.background='rgba(139,92,246,0.18)'" onmouseout="this.style.background='rgba(139,92,246,0.08)'">
+                  <Send :size="10" />
+                  {{ sendingId === notif.id ? '...' : 'Renvoyer' }}
+                </button>
                 <button v-if="notif.ao_id" @click="router.push(`/appels-offres/${notif.ao_id}`)"
                         class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg transition-colors"
                         style="background: rgba(255,255,255,0.04); color: #64748b;"
                         onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#64748b'">
                   Voir <ArrowRight :size="10" />
+                </button>
+                <button @click="deleteNotif(notif.id)"
+                        class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg transition-colors"
+                        style="background: rgba(244,63,94,0.06); color: #f43f5e;"
+                        onmouseover="this.style.background='rgba(244,63,94,0.15)'" onmouseout="this.style.background='rgba(244,63,94,0.06)'">
+                  <Trash2 :size="10" />
                 </button>
               </div>
             </div>
