@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum StatutAO {
+  EN_ATTENTE
+  ANALYSE
+  PERTINENT
+  ARCHIVE
+}
+
+model User {
+  id                 Int            @id @default(autoincrement())
+  nom                String
+  prenom             String
+  email              String         @unique
+  motDePasse         String
+  role               Role           @default(USER)
+  actif              Boolean        @default(true)
+  notificationsEmail Boolean        @default(true)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  notifications      Notification[]
+}
+
+model AppelOffre {
+  id            Int            @id @default(autoincrement())
+  titre         String
+  domaine       String?
+  fichierPath   String?
+  sourceUrl     String?
+  sourceType    String         @default("MANUEL") // AUTO
+  statut        StatutAO       @default(EN_ATTENTE)
+  score         Int?
+  resume        String?
+  justification String?
+  competences   String[]
+  budgetEstime  String?
+  duree         String?
+  dateLimite    DateTime?
+  dateAnalyse   DateTime?
+  contenuBrut   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  notifications Notification[]
+}
+
+model Notification {
+  id          Int        @id @default(autoincrement())
+  aoId        Int
+  userId      Int
+  type        String     // ALERTE_AO | RECUPERATION_AUTO | ERREUR
+  statut      String     @default("ENVOYE") // ECHEC
+  envoyeLe    DateTime   @default(now())
+  ao          AppelOffre @relation(fields: [aoId], references: [id])
+  user        User       @relation(fields: [userId], references: [id])
+}

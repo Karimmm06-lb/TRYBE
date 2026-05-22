@@ -1,0 +1,12 @@
+{
+  "name": "fake-ai-scorer",
+  "version": "1.0.0",
+  "description": "Fake AI offer scoring API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
