@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRYBE — Aperçu complet du site</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f0f0f0;-webkit-font-smoothing:antialiased}
+
+/* ── NAV TABS ── */
+.page-nav{display:flex;gap:0;background:#1a1a1a;position:sticky;top:0;z-index:1000;padding:0 20px;overflow-x:auto}
+.page-tab{padding:13px 20px;font-size:12.5px;font-weight:600;color:#888;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.page-tab:hover{color:#ccc}
+.page-tab.active{color:#e85d26;border-bottom-color:#e85d26}
+.page-tab .badge{background:#e85d26;color:#fff;font-size:9px;padding:1px 5px;border-radius:99px;font-weight:700}
+.page-tab .who{font-size:9px;padding:1px 6px;border-radius:99px;font-weight:700}
+.page-tab .who.karim{background:rgba(232,93,38,0.15);color:#e85d26}
+.page-tab .who.ghani{background:rgba(59,130,246,0.12);color:#3b82f6}
+.page{display:none;min-height:calc(100vh - 44px);background:#fdf6f0}
+.page.active{display:block}
+#page-login.active{display:flex}
+
+/* ── COLORS ── */
+:root{
+  --orange:#e85d26;--orange-light:#fde8dc;--orange-dark:#c2410c;
+  --bg:#fdf6f0;--surface:#fff;--border:#e5e7eb;
+  --text:#1a1210;--muted:#64748b;--subtle:#94a3b8;
+}
+
+/* ── HEADER ── */
+.header{background:#fff;border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:44px;z-index:50}
+.logo{font-size:22px;font-weight:800;color:var(--orange);letter-spacing:-0.5px;cursor:pointer}
+.header-right{display:flex;align-items:center;gap:12px}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
+.btn-primary{background:var(--orange);color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btn-primary:hover{background:var(--orange-dark)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-outline{background:transparent;border:1px solid var(--orange);color:var(--orange);padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:20px}
+.card-sm{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px}
+
+/* ── BADGES ── */
+.badge{padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
+.badge-green{background:#d1fae5;color:#065f46}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.badge-orange{background:#fde8dc;color:#9a3412}
+.badge-gray{background:#f1f5f9;color:#64748b}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+/* ── MISC ── */
+.separator{height:1px;background:var(--border);margin:16px 0}
+.section-title{font-size:10px;font-weight:700;color:var(--subtle);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.tag{background:var(--orange-light);color:var(--orange);padding:5px 12px;border-radius:8px;font-size:11px;font-weight:600;display:inline-block}
+.spinner{width:36px;height:36px;border:3px solid var(--orange-light);border-top-color:var(--orange);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── SCORE RING ── */
+.score-ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .score-val{position:absolute;text-align:center}
+
+/* ── PROGRESS BAR ── */
+.progress{height:8px;background:#f1f5f9;border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;transition:width .7s}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeUp .4s ease both}
+.delay1{animation-delay:.05s}.delay2{animation-delay:.1s}.delay3{animation-delay:.15s}.delay4{animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ NAV TABS -->
+<nav class="page-nav">
+  <div class="page-tab active" onclick="show('login')">🔐 Connexion <span class="who ghani">Ghani</span></div>
+  <div class="page-tab" onclick="show('dashboard')">📊 Dashboard <span class="who ghani">Ghani</span></div>
+  <div class="page-tab" onclick="show('upload')">📤 Upload AO <span class="who karim">Karim</span></div>
+  <div class="page-tab" onclick="show('detail')">🔍 Détail AO <span class="who karim">Karim</span></div>
+  <div class="page-tab" onclick="show('notifications')">🔔 Notifications <span class="who karim">Karim</span> <span class="badge">3</span></div>
+  <div class="page-tab" onclick="show('analytics')">📈 Analytics <span class="who karim">Karim</span></div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE LOGIN -->
+<div class="page active" id="page-login" style="align-items:center;justify-content:center;">
+  <div style="width:100%;max-width:420px;padding:20px">
+    <div class="card animate" style="padding:40px">
+      <div style="text-align:center;margin-bottom:32px">
+        <div style="font-size:32px;font-weight:800;color:var(--orange);letter-spacing:-1px;margin-bottom:6px">trybe</div>
+        <p style="color:var(--muted);font-size:14px">Connectez-vous à votre espace</p>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Adresse email</label>
+        <input type="email" value="admin@trybe.com" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);background:#fafafa;outline:none">
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">Mot de passe</label>
+        <input type="password" value="trybeadmin55" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);background:#fafafa;outline:none">
+      </div>
+      <button onclick="show('dashboard')" style="width:100%;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer">
+        Se connecter
+      </button>
+      <p style="text-align:center;font-size:12px;color:var(--subtle);margin-top:20px">admin@trybe.com · trybeadmin55</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE DASHBOARD (Ghani) -->
+<div class="page" id="page-dashboard">
+  <div class="header">
+    <span class="logo">trybe</span>
+    <div class="header-right">
+      <button onclick="show('notifications')" style="background:none;border:none;cursor:pointer;position:relative">
+        <svg width="22" height="22" fill="none" stroke="#64748b" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:var(--orange);color:#fff;font-size:9px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff">3</span>
+      </button>
+      <div class="avatar" title="Jean Dupont">JD</div>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:32px 24px">
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+      <div class="card animate">
+        <p style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px">Total AO</p>
+        <p style="font-size:36px;font-weight:800;color:var(--text)">24</p>
+        <p style="font-size:12px;color:var(--subtle);margin-top:4px">appels d'offres récupérés</p>
+      </div>
+      <div class="card animate delay1">
+        <p style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px">Score moyen</p>
+        <p style="font-size:36px;font-weight:800;color:#10b981">68</p>
+        <p style="font-size:12px;color:var(--subtle);margin-top:4px">sur 100 points</p>
+      </div>
+      <div class="card animate delay2">
+        <p style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px">AO sauvegardés</p>
+        <p style="font-size:36px;font-weight:800;color:var(--orange)">7</p>
+        <p style="font-size:12px;color:var(--subtle);margin-top:4px">marqués pour suivi</p>
+      </div>
+    </div>
+
+    <!-- Actions Karim -->
+    <div style="display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap">
+      <button onclick="show('upload')" class="btn-primary">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+        Analyser un AO
+      </button>
+      <button onclick="show('analytics')" class="btn-outline">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>
+        Analytics
+      </button>
+    </div>
+
+    <!-- AO Cards -->
+    <h2 style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px">Appels d'offres récents</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+
+      <!-- Card 1 -->
+      <div class="card animate" onclick="show('detail')" style="cursor:pointer;border-color:rgba(16,185,129,0.2)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="badge badge-green">★ Très pertinent</span>
+          <span style="font-size:22px;font-weight:800;color:#10b981">82</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3">Mission développement plateforme IA – gestion documents</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Développement Web · Récupération Auto · 12 jan.</p>
+        <div class="progress"><div class="progress-fill" style="width:82%;background:#10b981"></div></div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end">
+          <button onclick="show('detail')" class="btn-ghost" style="font-size:12px;padding:6px 14px">Voir les détails →</button>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card animate delay1" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="badge badge-blue">Pertinent</span>
+          <span style="font-size:22px;font-weight:800;color:#3b82f6">67</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3">Refonte SI RH – intégration API REST & microservices</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Cloud · Manuel · 8 jan.</p>
+        <div class="progress"><div class="progress-fill" style="width:67%;background:#3b82f6"></div></div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end">
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px">Voir les détails →</button>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card animate delay2" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="badge badge-orange">Moyen</span>
+          <span style="font-size:22px;font-weight:800;color:#f59e0b">44</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3">Audit sécurité infrastructure & pentest – secteur bancaire</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Cybersécurité · Auto · 5 jan.</p>
+        <div class="progress"><div class="progress-fill" style="width:44%;background:#f59e0b"></div></div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end">
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px">Voir les détails →</button>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card animate delay3" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <span class="badge badge-gray">En attente</span>
+          <span style="font-size:22px;font-weight:800;color:#94a3b8">—</span>
+        </div>
+        <h3 style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.3">Développement application mobile B2B – logistique</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Mobile · Manuel · 3 jan.</p>
+        <div class="progress"><div class="progress-fill" style="width:0%;background:#94a3b8"></div></div>
+        <div style="margin-top:12px;display:flex;justify-content:flex-end">
+          <button class="btn-ghost" style="font-size:12px;padding:6px 14px">Voir les détails →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE UPLOAD (Karim) -->
+<div class="page" id="page-upload">
+  <div class="header">
+    <span class="logo" onclick="show('dashboard')">trybe</span>
+    <div class="header-right">
+      <button onclick="show('dashboard')" class="btn-ghost" style="font-size:13px">← Tableau de bord</button>
+    </div>
+  </div>
+
+  <div style="max-width:640px;margin:0 auto;padding:40px 20px">
+    <h1 style="font-size:28px;font-weight:800;color:var(--text);margin-bottom:8px">Analyser un appel d'offres</h1>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:36px">Importez votre document — l'IA extrait, score et classe automatiquement.</p>
+
+    <!-- Stepper -->
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:36px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 0 0 4px var(--orange-light)">✓</div>
+        <span style="font-size:13px;font-weight:700;color:var(--orange)">Sélection</span>
+      </div>
+      <div style="flex:0 0 48px;height:2px;background:var(--orange);margin:0 8px"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;box-shadow:0 0 0 4px var(--orange-light)">2</div>
+        <span style="font-size:13px;font-weight:700;color:var(--orange)">Confirmation</span>
+      </div>
+      <div style="flex:0 0 48px;height:2px;background:var(--border);margin:0 8px"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;color:#94a3b8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">3</div>
+        <span style="font-size:13px;font-weight:600;color:#94a3b8">Résultat</span>
+      </div>
+    </div>
+
+    <!-- Fichier sélectionné -->
+    <div class="card animate" style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+      <span style="font-size:36px">📕</span>
+      <div style="flex:1">
+        <p style="font-weight:700;color:var(--text)">Appel_Offre_DSI_2024.pdf</p>
+        <p style="font-size:12px;color:var(--subtle);margin-top:2px">248 Ko · PDF</p>
+      </div>
+      <button style="background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;color:#94a3b8;font-size:18px">✕</button>
+    </div>
+
+    <!-- Info box -->
+    <div style="background:var(--orange-light);border:1px solid #fbd5c5;border-radius:14px;padding:16px 18px;display:flex;gap:12px;margin-bottom:20px">
+      <div style="width:32px;height:32px;background:rgba(232,93,38,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">ℹ️</div>
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">Analyse IA complète</p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.6">GPT-4o-mini extrait le texte, score la pertinence (0-100), identifie le domaine, les compétences et le budget estimé.</p>
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div style="display:flex;gap:12px">
+      <button class="btn-ghost" style="flex:1;padding:13px">Annuler</button>
+      <button onclick="show('result')" class="btn-primary" style="flex:2;padding:13px;justify-content:center;font-size:14px">
+        🤖 Lancer l'analyse IA
+      </button>
+    </div>
+
+    <!-- Zone drop (cachée ici, montrer en bas) -->
+    <div style="margin-top:24px;border:2px dashed var(--border);border-radius:16px;padding:40px;text-align:center;color:var(--subtle);font-size:13px">
+      Ou glissez un nouveau fichier ici (PDF, DOCX, TXT · max 20 Mo)
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE DETAIL AO (Karim) -->
+<div class="page" id="page-detail">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button onclick="show('dashboard')" style="background:#f8fafc;border:1px solid var(--border);width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">←</button>
+      <span class="logo">trybe</span>
+      <span style="color:#e2e8f0">|</span>
+      <span style="color:var(--muted);font-size:14px;font-weight:500;max-width:360px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Mission développement plateforme IA – gestion documents</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" style="font-size:13px">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+        Exporter PDF
+      </button>
+    </div>
+  </div>
+
+  <div style="max-width:1000px;margin:0 auto;padding:32px 24px">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:20px">
+
+      <!-- Colonne gauche -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Score card -->
+        <div class="card animate" style="text-align:center;padding:28px 20px">
+          <!-- SVG Ring -->
+          <div class="score-ring" style="width:140px;height:140px;margin:0 auto 12px">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="58" fill="none" stroke="#f1f5f9" stroke-width="12"/>
+              <circle cx="70" cy="70" r="58" fill="none" stroke="#10b981" stroke-width="12"
+                stroke-linecap="round" stroke-dasharray="298 364" transform="rotate(-90 70 70)"/>
+            </svg>
+            <div class="score-val">
+              <div style="font-size:36px;font-weight:800;color:#10b981;line-height:1">82</div>
+              <div style="font-size:11px;color:var(--subtle)">/100</div>
+            </div>
+          </div>
+          <p style="font-size:13px;font-weight:700;color:#10b981;margin-bottom:16px">★ Très pertinent</p>
+          <span class="badge badge-green" style="width:100%;justify-content:center;padding:8px">Analysé</span>
+        </div>
+
+        <!-- Infos -->
+        <div class="card animate delay1" style="padding:18px">
+          <p class="section-title">Informations</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🏷️</div>
+              <div><p style="font-size:10px;color:var(--subtle)">Domaine</p><p style="font-size:13px;font-weight:600;color:var(--text)">Développement Web / IA</p></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">💰</div>
+              <div><p style="font-size:10px;color:var(--subtle)">Budget estimé</p><p style="font-size:13px;font-weight:600;color:var(--text)">80 000 – 120 000 €</p></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">📅</div>
+              <div><p style="font-size:10px;color:var(--subtle)">Date limite</p><p style="font-size:13px;font-weight:600;color:var(--text)">31 mars 2025</p></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:32px;height:32px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">⏱</div>
+              <div><p style="font-size:10px;color:var(--subtle)">Durée</p><p style="font-size:13px;font-weight:600;color:var(--text)">12 mois</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compétences -->
+        <div class="card animate delay2" style="padding:18px">
+          <p class="section-title">Compétences requises</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Vue.js</span>
+            <span class="tag">PostgreSQL</span><span class="tag">LangChain</span><span class="tag">Docker</span><span class="tag">OpenAI</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Colonne droite -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Résumé -->
+        <div class="card animate" style="padding:24px">
+          <p class="section-title">Résumé IA</p>
+          <p style="color:#475569;line-height:1.8;font-size:15px">
+            La DSI d'un grand groupe industriel recherche une ESN pour développer une plateforme intelligente de gestion documentaire intégrant des capacités d'IA générative. Le projet couvre l'extraction automatique de données contractuelles, la classification et l'indexation sémantique de documents, ainsi qu'une interface utilisateur moderne pour les équipes métier. Une forte expertise en LLM et en développement full-stack est requise.
+          </p>
+        </div>
+
+        <!-- Justification -->
+        <div class="card animate delay1" style="padding:24px">
+          <p class="section-title">Justification du score</p>
+          <div style="display:flex;gap:16px">
+            <div style="width:3px;background:rgba(16,185,129,0.3);border-radius:2px;flex-shrink:0"></div>
+            <p style="color:#64748b;line-height:1.8;font-size:15px">Ce projet correspond parfaitement au profil d'une ESN spécialisée en IA et développement web. Les technologies requises (Python, Vue.js, LLM) sont au cœur de notre expertise. Le budget est attractif et la durée permet un engagement rentable. L'unique frein potentiel est la nécessité d'une expérience sectorielle dans l'industrie.</p>
+          </div>
+        </div>
+
+        <!-- Niveau pertinence -->
+        <div class="card animate delay2" style="padding:24px">
+          <p class="section-title">Niveau de pertinence</p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0"></div>
+              <span style="font-size:13px;color:#64748b;flex:1">Très pertinent (≥75)</span>
+              <span style="color:#10b981">✓</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#34d399;flex-shrink:0"></div>
+              <span style="font-size:13px;color:#64748b;flex:1">Pertinent (≥60)</span>
+              <span style="color:#34d399">✓</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;flex-shrink:0"></div>
+              <span style="font-size:13px;color:#64748b;flex:1">Moyen (≥40)</span>
+              <span style="color:#f59e0b">✓</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#f43f5e;flex-shrink:0"></div>
+              <span style="font-size:13px;color:#64748b;flex:1">Faible (&lt;40)</span>
+              <div style="width:16px;height:16px;border-radius:50%;border:1px solid #e2e8f0"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card animate delay3" style="padding:20px">
+          <p class="section-title">Actions</p>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <button style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;font-size:13px;font-weight:600;cursor:pointer">✓ Marquer pertinent</button>
+            <button style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;color:#64748b;font-size:13px;font-weight:600;cursor:pointer">📦 Archiver</button>
+            <button style="display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;border:1px solid #fde8dc;background:var(--orange-light);color:var(--orange);font-size:13px;font-weight:600;cursor:pointer">↺ Remettre en actif</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE NOTIFICATIONS (Karim) -->
+<div class="page" id="page-notifications">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="logo" onclick="show('dashboard')">trybe</span>
+      <span style="color:#e2e8f0">|</span>
+      <span style="font-weight:600;color:var(--muted)">Notifications</span>
+      <span style="background:var(--orange);color:#fff;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700">3</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button style="background:none;border:none;color:var(--orange);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        Tout marquer lu
+      </button>
+      <button onclick="show('dashboard')" class="btn-ghost" style="font-size:13px">← Tableau de bord</button>
+    </div>
+  </div>
+
+  <div style="max-width:720px;margin:0 auto;padding:32px 20px">
+    <!-- Filtres -->
+    <div style="display:flex;gap:8px;margin-bottom:24px">
+      <button style="padding:8px 18px;border-radius:10px;background:var(--orange);color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer">Toutes</button>
+      <button style="padding:8px 18px;border-radius:10px;background:#fff;border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer">Non lues</button>
+      <button style="padding:8px 18px;border-radius:10px;background:#fff;border:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer">Lues</button>
+    </div>
+
+    <!-- Notif 1 - très pertinent, non lu -->
+    <div class="card animate" style="display:flex;gap:14px;margin-bottom:12px;border-color:rgba(232,93,38,0.2)">
+      <div style="width:10px;height:10px;background:#10b981;border-radius:50%;margin-top:6px;flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="badge badge-green">★ Très pertinent</span>
+          <span style="font-size:11px;color:var(--subtle)">Il y a 2h</span>
+        </div>
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Mission développement plateforme IA – gestion documents</p>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:12px;color:#10b981">↗ Score : 82/100</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+          <button style="background:#dbeafe;color:#1e40af;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">Marquer lu</button>
+          <button style="background:var(--orange-light);color:var(--orange);border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px">✉ Renvoyer</button>
+          <button onclick="show('detail')" style="background:#f8fafc;color:var(--muted);border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">Voir →</button>
+          <button style="background:#fee2e2;color:#f43f5e;border:none;padding:5px 8px;border-radius:7px;font-size:11px;cursor:pointer">🗑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notif 2 - pertinent, non lu -->
+    <div class="card animate delay1" style="display:flex;gap:14px;margin-bottom:12px;border-color:rgba(59,130,246,0.2)">
+      <div style="width:10px;height:10px;background:#3b82f6;border-radius:50%;margin-top:6px;flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="badge badge-blue">Pertinent</span>
+          <span style="font-size:11px;color:var(--subtle)">Il y a 5h</span>
+        </div>
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Refonte SI RH – intégration API REST & microservices</p>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:12px;color:#10b981">↗ Score : 67/100</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div style="display:flex;gap:6px">
+          <button style="background:#dbeafe;color:#1e40af;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">Marquer lu</button>
+          <button style="background:var(--orange-light);color:var(--orange);border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">✉ Renvoyer</button>
+          <button style="background:#fee2e2;color:#f43f5e;border:none;padding:5px 8px;border-radius:7px;font-size:11px;cursor:pointer">🗑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notif 3 - lu -->
+    <div class="card animate delay2" style="display:flex;gap:14px;margin-bottom:12px;opacity:0.75">
+      <div style="width:10px;height:10px;background:#e2e8f0;border-radius:50%;margin-top:6px;flex-shrink:0"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span class="badge badge-orange">Alerte AO</span>
+          <span style="font-size:11px;color:var(--subtle)">Hier · 08 jan.</span>
+        </div>
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">Audit sécurité infrastructure & pentest – secteur bancaire</p>
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:12px;color:#f59e0b">↗ Score : 44/100</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:6px">
+        <button style="background:var(--orange-light);color:var(--orange);border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer">✉ Renvoyer</button>
+        <button style="background:#fee2e2;color:#f43f5e;border:none;padding:5px 8px;border-radius:7px;font-size:11px;cursor:pointer">🗑</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ PAGE ANALYTICS (Karim) -->
+<div class="page" id="page-analytics">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="logo" onclick="show('dashboard')">trybe</span>
+      <span style="color:#e2e8f0">|</span>
+      <span style="font-weight:600;color:var(--muted)">Analytics</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="show('upload')" class="btn-primary" style="font-size:13px">+ Analyser un AO</button>
+      <button onclick="show('dashboard')" class="btn-ghost" style="font-size:13px">← Dashboard</button>
+    </div>
+  </div>
+
+  <div style="max-width:1100px;margin:0 auto;padding:32px 24px">
+
+    <!-- KPI -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+      <div class="card animate">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+          <div style="width:40px;height:40px;background:var(--orange-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">📄</div>
+          <span class="badge badge-green">Total</span>
+        </div>
+        <p style="font-size:40px;font-weight:800;color:var(--text);line-height:1">24</p>
+        <p style="font-size:13px;color:var(--subtle);margin-top:4px">AO analysés</p>
+      </div>
+      <div class="card animate delay1">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+          <div style="width:40px;height:40px;background:rgba(16,185,129,0.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">📈</div>
+          <span style="font-size:11px;font-weight:700;color:#10b981;background:rgba(16,185,129,0.1);padding:2px 8px;border-radius:99px">/100</span>
+        </div>
+        <p style="font-size:40px;font-weight:800;color:#10b981;line-height:1">68</p>
+        <p style="font-size:13px;color:var(--subtle);margin-top:4px">Score moyen IA</p>
+      </div>
+      <div class="card animate delay2">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+          <div style="width:40px;height:40px;background:#eff6ff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🔔</div>
+          <button onclick="show('notifications')" style="background:none;border:none;color:var(--orange);font-size:11px;font-weight:600;cursor:pointer">Voir tout</button>
+        </div>
+        <p style="font-size:40px;font-weight:800;color:var(--text);line-height:1">18</p>
+        <p style="font-size:13px;color:var(--subtle);margin-top:4px">Alertes envoyées</p>
+      </div>
+    </div>
+
+    <!-- Graphe + Statuts -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+
+      <!-- Graphe barres -->
+      <div class="card animate" style="padding:24px">
+        <h3 style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Évolution des analyses</h3>
+        <p style="font-size:12px;color:var(--subtle);margin-bottom:24px">Nombre d'AO analysés par semaine (8 semaines)</p>
+        <div style="display:flex;align-items:flex-end;gap:8px;height:120px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">2</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:24px"></div>
+            <span style="font-size:9px;color:var(--subtle)">06 jan</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">1</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:12px;opacity:.6"></div>
+            <span style="font-size:9px;color:var(--subtle)">13 jan</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">4</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:48px"></div>
+            <span style="font-size:9px;color:var(--subtle)">20 jan</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">3</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:36px;opacity:.8"></div>
+            <span style="font-size:9px;color:var(--subtle)">27 jan</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">6</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:72px"></div>
+            <span style="font-size:9px;color:var(--subtle)">03 fév</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">2</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:24px;opacity:.7"></div>
+            <span style="font-size:9px;color:var(--subtle)">10 fév</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">5</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:60px;opacity:.9"></div>
+            <span style="font-size:9px;color:var(--subtle)">17 fév</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <span style="font-size:11px;font-weight:700;color:var(--text)">1</span>
+            <div style="width:100%;background:var(--orange);border-radius:4px 4px 0 0;height:12px;opacity:.5"></div>
+            <span style="font-size:9px;color:var(--subtle)">24 fév</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Répartition statuts -->
+      <div class="card animate delay1" style="padding:24px">
+        <h3 style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Répartition statut</h3>
+        <p style="font-size:12px;color:var(--subtle);margin-bottom:20px">Distribution des AO</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#10b981"></div><span style="font-size:12px;color:var(--muted)">Pertinent</span></div>
+              <span style="font-size:12px;font-weight:700">10</span>
+            </div>
+            <div class="progress"><div class="progress-fill" style="width:42%;background:#10b981"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#3b82f6"></div><span style="font-size:12px;color:var(--muted)">Analysé</span></div>
+              <span style="font-size:12px;font-weight:700">8</span>
+            </div>
+            <div class="progress"><div class="progress-fill" style="width:33%;background:#3b82f6"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#f59e0b"></div><span style="font-size:12px;color:var(--muted)">En attente</span></div>
+              <span style="font-size:12px;font-weight:700">4</span>
+            </div>
+            <div class="progress"><div class="progress-fill" style="width:17%;background:#f59e0b"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:50%;background:#94a3b8"></div><span style="font-size:12px;color:var(--muted)">Archivé</span></div>
+              <span style="font-size:12px;font-weight:700">2</span>
+            </div>
+            <div class="progress"><div class="progress-fill" style="width:8%;background:#94a3b8"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Domaines + AO très pertinents -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <!-- Top domaines -->
+      <div class="card animate" style="padding:24px">
+        <h3 style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Top domaines</h3>
+        <p style="font-size:12px;color:var(--subtle);margin-bottom:20px">Répartition par secteur</p>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:var(--text)">Développement Web</span><span style="font-size:12px;font-weight:700">8</span></div>
+              <div class="progress"><div class="progress-fill" style="width:100%;background:var(--orange)"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.75">2</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:var(--text)">Intelligence Artificielle</span><span style="font-size:12px;font-weight:700">6</span></div>
+              <div class="progress"><div class="progress-fill" style="width:75%;background:var(--orange);opacity:.8"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.6">3</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:var(--text)">Cloud & DevOps</span><span style="font-size:12px;font-weight:700">5</span></div>
+              <div class="progress"><div class="progress-fill" style="width:62%;background:var(--orange);opacity:.7"></div></div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:20px;height:20px;border-radius:50%;background:var(--orange);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:.45">4</span>
+            <div style="flex:1">
+              <div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;font-weight:600;color:var(--text)">Data & Analytics</span><span style="font-size:12px;font-weight:700">3</span></div>
+              <div class="progress"><div class="progress-fill" style="width:37%;background:var(--orange);opacity:.55"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AO très pertinents -->
+      <div class="card animate delay1" style="padding:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <h3 style="font-size:14px;font-weight:700;color:var(--text)">Très pertinents récents</h3>
+          <span style="font-size:11px;font-weight:600;color:var(--orange)">Score ≥ 75</span>
+        </div>
+        <p style="font-size:12px;color:var(--subtle);margin-bottom:16px">Les 5 derniers AO hautement pertinents</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div onclick="show('detail')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:#fafafa;border:1px solid transparent" onmouseover="this.style.background='var(--orange-light)'" onmouseout="this.style.background='#fafafa'">
+            <div style="width:42px;height:42px;background:#d1fae5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#065f46;flex-shrink:0">82</div>
+            <div style="flex:1;min-width:0">
+              <p style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Mission développement plateforme IA</p>
+              <p style="font-size:11px;color:var(--subtle)">Développement Web · 12 jan.</p>
+            </div>
+            <span style="color:var(--subtle);font-size:14px">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:#fafafa" onmouseover="this.style.background='var(--orange-light)'" onmouseout="this.style.background='#fafafa'">
+            <div style="width:42px;height:42px;background:#d1fae5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#065f46;flex-shrink:0">78</div>
+            <div style="flex:1;min-width:0">
+              <p style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Refonte applicative Vue.js + API GraphQL</p>
+              <p style="font-size:11px;color:var(--subtle)">IA · 08 jan.</p>
+            </div>
+            <span style="color:var(--subtle);font-size:14px">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;background:#fafafa" onmouseover="this.style.background='var(--orange-light)'" onmouseout="this.style.background='#fafafa'">
+            <div style="width:42px;height:42px;background:#d1fae5;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#065f46;flex-shrink:0">76</div>
+            <div style="flex:1;min-width:0">
+              <p style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Chatbot IA métier – secteur assurance</p>
+              <p style="font-size:11px;color:var(--subtle)">Cloud · 05 jan.</p>
+            </div>
+            <span style="color:var(--subtle);font-size:14px">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function show(page) {
+  // pages map
+  const map = { result: 'upload' }
+  page = map[page] || page
+
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'))
+
+  const pageEl = document.getElementById('page-' + page)
+  if (pageEl) pageEl.classList.add('active')
+
+  const tabs = document.querySelectorAll('.page-tab')
+  const tabMap = { login:0, dashboard:1, upload:2, detail:3, notifications:4, analytics:5 }
+  if (tabMap[page] !== undefined) tabs[tabMap[page]]?.classList.add('active')
+
+  window.scrollTo(0, 0)
+}
+</script>
+</body>
+</html>
