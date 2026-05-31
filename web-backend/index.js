@@ -17,8 +17,9 @@ app.use(cors({
 app.use(express.json());
 
 
-const getTendersRouter = require("./Tenders.route");
-const authRouter = require("./auth.route");
+// Ghani — Module Récupération & Classification
+const getTendersRouter = require("./ghani/tenders.route");
+const authRouter       = require("./ghani/auth.route");
 
 // Karim — Module Ingestion & Analyse
 const karimUpload        = require("./karim/upload.route");
@@ -27,6 +28,7 @@ const karimAo            = require("./karim/ao.route");
 const karimNotifications = require("./karim/notifications.route");
 
 
+// Ghani — Module Récupération & Classification
 app.use("/api/auth", authRouter);
 app.use(getTendersRouter);
 

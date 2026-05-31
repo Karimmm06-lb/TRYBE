@@ -179,7 +179,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import AoCard from '../components/AoCard.vue'
+import AoCard from '../../components/AoCard.vue'
 
 const router = useRouter()
 
